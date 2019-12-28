@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-const Header = `<?xml version="1.0" encoding="UTF-8"?>\n`
+const Header = `<?xml version="1.0" encoding="UTF-8" ?>` + "\n"
 
 var ErrValidation = errors.New("validation error")
 
@@ -22,6 +22,7 @@ type XMLSitemapIndexItem struct {
 type XMLSitemapIndex struct {
 	XMLName xml.Name `xml:"sitemapindex"`
 	Sitemap []*XMLSitemapIndexItem  `xml:"sitemap"`
+	Xmlns     string   `xml:"xmlns,attr"`
 }
 
 // XMLSitemapURLSet is the XML representation of <urlset>...</urlset> used in sitemap
@@ -65,7 +66,7 @@ func NewSitemapIndex(items []*SitemapIndexItem, opts * Options) *SitemapIndex {
 	if si.options == nil {
 		si.options = &Options{
 			prettyOutput:  false,
-			withXMLHeader: true,
+			withXMLHeader: false,
 			validate: true,
 		}
 	}
@@ -89,6 +90,7 @@ func (si * SitemapIndex) toXMLString() (string, error) {
 	}
 	siXML := XMLSitemapIndex{
 		Sitemap: itemsXML,
+		Xmlns: "http://www.sitemaps.org/schemas/sitemap/0.9",
 	}
 	result, err := xmlMarshal(si.options, siXML)
 	if err != nil {
@@ -125,5 +127,9 @@ func xmlMarshal(options *Options, obj interface{}) (string, error) {
 	if err != nil {
 		return "", nil
 	}
-	return string(result), nil
+	out := string(result)
+	if options != nil && options.withXMLHeader {
+		out = Header + out
+	}
+	return out, nil
 }

@@ -48,7 +48,7 @@ func TestAddItem(t *testing.T) {
 
 func TestToXMLString(t *testing.T) {
 	si := NewSitemapIndex(MockIndexItems[:1], nil)
-	expectedXMLString := `<sitemapindex><sitemap><loc>http://mysite.com/sitemap_1.xml</loc><lastmod>2019-10-10T08:00:00-04:00</lastmod></sitemap></sitemapindex>`
+	expectedXMLString := `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><sitemap><loc>http://mysite.com/sitemap_1.xml</loc><lastmod>2019-10-10T08:00:00-04:00</lastmod></sitemap></sitemapindex>`
 	xmlString, _ := si.toXMLString()
 	if xmlString != expectedXMLString {
 		t.Error("received xml string is not as expected")
