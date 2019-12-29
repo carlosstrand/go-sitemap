@@ -1,3 +1,6 @@
+[![](https://godoc.org/github.com/carlosstrand/go-sitemap?status.svg)](http://godoc.org/github.com/carlosstrand/go-sitemap)
+
+
 # go-sitemap
 
 Go package for manipulate golang object of sitemap and generate an ready-to-use XML.
