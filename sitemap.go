@@ -2,134 +2,90 @@ package sitemap
 
 import (
 	"encoding/xml"
-	"errors"
 	"fmt"
-	"net/url"
 	"time"
 )
 
-const Header = `<?xml version="1.0" encoding="UTF-8" ?>` + "\n"
-
-var ErrValidation = errors.New("validation error")
-
-// XMLSitemapIndex is the XML representation of <sitemap>...</sitemap> used in sitemapindex
-type XMLSitemapIndexItem struct {
-	Loc     string `xml:"loc"`
-	LastMod string `xml:"lastmod"`
-}
-
-// XMLSitemapIndex is the XML representation of <sitemapindex>...</sitemapindex>
-type XMLSitemapIndex struct {
-	XMLName xml.Name `xml:"sitemapindex"`
-	Sitemap []*XMLSitemapIndexItem  `xml:"sitemap"`
+// xmlSitemap is the XML representation of <urlset>...</urlset> used in sitemap
+type xmlSitemap struct {
+	XMLName xml.Name `xml:"urlset"`
+	URL     []*xmlSitemapItem    `xml:"url"`
 	Xmlns     string   `xml:"xmlns,attr"`
 }
 
-// XMLSitemapURLSet is the XML representation of <urlset>...</urlset> used in sitemap
-type XMLSitemapURLSet struct {
-	XMLName xml.Name `xml:"urlset"`
-	URL     []*XMLSitemapURL    `xml:"url"`
-}
-
-// XMLSitemapURL is the XML representation of <url> in <sitemap>
-type XMLSitemapURL struct {
+// xmlSitemapItem is the XML representation of <url> in <sitemap>
+type xmlSitemapItem struct {
 	Loc        string  `xml:"loc"`
 	LastMod    string  `xml:"lastmod"`
 	ChangeFreq string  `xml:"changefreq"`
-	Priority   float32 `xml:"priority"`
+	Priority   string `xml:"priority"`
 }
 
-
-type Options struct {
-	prettyOutput bool
-	withXMLHeader bool
-	validate bool
-}
-
-// SitemapIndex is the structure used to create new sitemap index
-type SitemapIndex struct {
-	items []*SitemapIndexItem
+// Sitemap is the structure used to create new sitemap
+type Sitemap struct {
+	items []*SitemapItem
 	options * Options
 }
 
-type SitemapIndexItem struct {
-	Loc string
+type SitemapItem struct {
+	Loc        string
 	LastMod time.Time
+	ChangeFreq string
+	Priority   float32
 }
 
-// NewSitemapIndex creates a new Sitemap Index
-func NewSitemapIndex(items []*SitemapIndexItem, opts * Options) *SitemapIndex {
-	si := SitemapIndex{
+func isValidItem(i * SitemapItem) bool {
+	if !validateURL(i.Loc) {
+		_ = fmt.Errorf("[validation error] Invalid URL: %s\n", i.Loc)
+		return false
+	}
+	if !validateChangeFreq(i.ChangeFreq) {
+		_ = fmt.Errorf("[validation error] Invalid ChangeFreq: %s\n", i.ChangeFreq)
+		return false
+	}
+	return true
+}
+
+// NewSitemap creates a new Sitemap
+func NewSitemap(items []*SitemapItem, opts * Options) *Sitemap {
+	s := Sitemap{
 		items: items,
 		options: opts,
 	}
-	if si.options == nil {
-		si.options = &Options{
-			prettyOutput:  false,
-			withXMLHeader: false,
-			validate: true,
-		}
+	if s.options == nil {
+		s.options = NewOptions()
 	}
-	return &si
+	return &s
 }
 
-func (si * SitemapIndex) addItem(loc string, lastMod time.Time) {
-	si.items = append(si.items, &SitemapIndexItem{Loc: loc, LastMod: lastMod})
-}
-
-func (si * SitemapIndex) toXMLString() (string, error) {
-	itemsXML := make([]*XMLSitemapIndexItem, len(si.items))
-	for idx, i := range si.items {
-		if si.options.validate && !isValidIndexItem(i) {
+func (s * Sitemap) toXMLString() (string, error) {
+	itemsXML := make([]*xmlSitemapItem, len(s.items))
+	for idx, i := range s.items {
+		if s.options.validate && !isValidItem(i) {
 			return "", ErrValidation
 		}
-		itemsXML[idx] = &XMLSitemapIndexItem {
+		itemsXML[idx] = &xmlSitemapItem {
 			Loc: i.Loc,
 			LastMod: formatTime(i.LastMod),
+			ChangeFreq: i.ChangeFreq,
+			Priority: fmt.Sprintf("%.1f", i.Priority),
 		}
 	}
-	siXML := XMLSitemapIndex{
-		Sitemap: itemsXML,
+	siXML := xmlSitemap{
+		URL: itemsXML,
 		Xmlns: "http://www.sitemaps.org/schemas/sitemap/0.9",
 	}
-	result, err := xmlMarshal(si.options, siXML)
+	result, err := xmlMarshal(s.options, siXML)
 	if err != nil {
 		return "", err
 	}
 	return result, nil
 }
 
-func isValidIndexItem(i * SitemapIndexItem) bool {
-	if !validateURL(i.Loc) {
-		_ = fmt.Errorf("[validation error] Invalid URL: %s\n", i.Loc)
-		return false
-	}
-	return true
+func (s * Sitemap) addItem(loc string, lastMod time.Time, changeFreq string, priority float32) {
+	s.items = append(s.items, &SitemapItem{Loc: loc, LastMod: lastMod, ChangeFreq: changeFreq, Priority: priority})
 }
 
-func validateURL(u string) bool {
-	_, err := url.ParseRequestURI(u)
-	return err == nil
-}
-
-func formatTime(t time.Time) string {
-	return t.Format(time.RFC3339)
-}
-
-func xmlMarshal(options *Options, obj interface{}) (string, error) {
-	var result []byte
-	var err error
-	if options != nil && options.prettyOutput {
-		result, err = xml.MarshalIndent(obj, "", "  ")
-	} else {
-		result, err = xml.Marshal(obj)
-	}
-	if err != nil {
-		return "", nil
-	}
-	out := string(result)
-	if options != nil && options.withXMLHeader {
-		out = Header + out
-	}
-	return out, nil
+func (s * Sitemap) removeItem(idx int) {
+	s.items = append(s.items[:idx], s.items[idx+1:]...)
 }
