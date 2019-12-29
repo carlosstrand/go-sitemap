@@ -18,24 +18,25 @@ package main
 
 import (
   "fmt"
-  "github.com/carlosstrand/go-sitemap"
   "log"
+
+  "github.com/carlosstrand/go-sitemap"
 )
 
 func main() {
   sitemap := NewSitemap([]*SitemapItem{
     {
-	  Loc: "https://my-site.com/about",
-	  LastMod: time.Now(),
-	  ChangeFreq: "daily",
+      Loc: "https://my-site.com/about",
+      LastMod: time.Now(),
+      ChangeFreq: "daily",
       Priority: 0.8,
-	},
-	{
-	  Loc: "https://my-site.com/contact",
-	  LastMod: time.Now(),
-	  ChangeFreq: "monthly",
+	  },
+    {
+      Loc: "https://my-site.com/contact",
+      LastMod: time.Now(),
+      ChangeFreq: "monthly",
       Priority: 0.2,
-	},
+    },
   }, nil)
 	
   xmlResult, err := sitemap.toXMLString()
@@ -54,20 +55,21 @@ package main
 
 import (
   "fmt"
-  "github.com/carlosstrand/go-sitemap"
   "log"
+
+  "github.com/carlosstrand/go-sitemap"
 )
 
 func main() {
   sitemapIdx := NewSitemapIndex([]*SitemapIndexItem{
     {
-	  Loc: "https://my-site.com/sitemap_1.xml",
-	  LastMod: time.Now(),
-	},
-	{
-	  Loc: "https://my-site.com/sitemap_2.xml",
-	  LastMod: time.Now(),
-	},
+	    Loc: "https://my-site.com/sitemap_1.xml",
+	    LastMod: time.Now(),
+    },
+    {
+      Loc: "https://my-site.com/sitemap_2.xml",
+      LastMod: time.Now(),
+    },
   }, nil)
 	
   xmlResult, err := sitemapIdx.toXMLString()
