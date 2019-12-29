@@ -51,15 +51,15 @@ func NewSitemapIndex(items []*SitemapIndexItem, opts * Options) *SitemapIndex {
 	return &si
 }
 
-func (si * SitemapIndex) addItem(loc string, lastMod time.Time) {
+func (si * SitemapIndex) AddItem(loc string, lastMod time.Time) {
 	si.items = append(si.items, &SitemapIndexItem{Loc: loc, LastMod: lastMod})
 }
 
-func (si * SitemapIndex) removeItem(idx int) {
+func (si * SitemapIndex) RemoveItem(idx int) {
 	si.items = append(si.items[:idx], si.items[idx+1:]...)
 }
 
-func (si * SitemapIndex) toXMLString() (string, error) {
+func (si * SitemapIndex) ToXMLString() (string, error) {
 	itemsXML := make([]*xmlSitemapIndexItem, len(si.items))
 	for idx, i := range si.items {
 		if si.options.validate && !isValidIndexItem(i) {

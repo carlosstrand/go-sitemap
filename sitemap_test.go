@@ -69,7 +69,7 @@ func TestAddIndexItem(t *testing.T) {
 		Loc:     "http://mysite.com/sitemap_3.xml",
 		LastMod: time.Date(2020, 10, 10, 8, 0, 0, 0, NewYorkLoc),
 	}
-	si.addItem(item.Loc, item.LastMod)
+	si.AddItem(item.Loc, item.LastMod)
 	if len(si.items) != 3 {
 		t.Error("Expect items length to be equal 3")
 	}
@@ -80,7 +80,7 @@ func TestRemoveIndexItem(t *testing.T) {
 	items := make([]*SitemapIndexItem, len(MockItems))
 	copy(items, MockIndexItems)
 	s := NewSitemapIndex(items, nil)
-	s.removeItem(0)
+	s.RemoveItem(0)
 	if len(s.items) != 1 {
 		t.Error("Expect items length to be equal 1")
 	}
@@ -90,7 +90,7 @@ func TestRemoveIndexItem(t *testing.T) {
 func TestSitemapIndexToXMLString(t *testing.T) {
 	si := NewSitemapIndex(MockIndexItems[:1], nil)
 	expectedXMLString := `<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><sitemap><loc>http://mysite.com/sitemap_1.xml</loc><lastmod>2019-10-10T08:00:00-04:00</lastmod></sitemap></sitemapindex>`
-	xmlString, _ := si.toXMLString()
+	xmlString, _ := si.ToXMLString()
 	if xmlString != expectedXMLString {
 		t.Error("received xml string is not as expected")
 	}
@@ -103,7 +103,7 @@ func TestSitemapIndexToXMLStringWithValidation(t *testing.T) {
 			LastMod: time.Now(),
 		},
 	}, nil)
-	_, err := si.toXMLString()
+	_, err := si.ToXMLString()
 	if err != ErrValidation {
 		t.Error("ErrValidation should be returned")
 	}
@@ -122,7 +122,7 @@ func TestAddItem(t *testing.T) {
 		Loc:     "http://mysite.com/my-url",
 		LastMod: time.Date(2020, 10, 10, 8, 0, 0, 0, NewYorkLoc),
 	}
-	s.addItem(item.Loc, item.LastMod, "daily", 0.5)
+	s.AddItem(item.Loc, item.LastMod, "daily", 0.5)
 	if len(s.items) != 3 {
 		t.Error("Expect items length to be equal 3")
 	}
@@ -133,7 +133,7 @@ func TestRemoveItem(t *testing.T) {
 	items := make([]*SitemapItem, len(MockItems))
 	copy(items, MockItems)
 	s := NewSitemap(items, nil)
-	s.removeItem(0)
+	s.RemoveItem(0)
 	if len(s.items) != 1 {
 		t.Error("Expect items length to be equal 1")
 	}
@@ -143,7 +143,7 @@ func TestRemoveItem(t *testing.T) {
 func TestSitemapToXMLString(t *testing.T) {
 	si := NewSitemap(MockItems[:1], nil)
 	expectedXMLString := `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>http://mysite.com/about</loc><lastmod>2019-10-10T08:00:00-04:00</lastmod><changefreq>daily</changefreq><priority>0.5</priority></url></urlset>`
-	xmlString, _ := si.toXMLString()
+	xmlString, _ := si.ToXMLString()
 	if xmlString != expectedXMLString {
 		t.Error("received xml string is not as expected")
 	}

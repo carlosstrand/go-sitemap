@@ -42,7 +42,7 @@ func main() {
     },
   }, nil)
   
-  xmlResult, err := sitemap.toXMLString()
+  xmlResult, err := sitemap.ToXMLString()
   if err != nil {
     log.Fatal(err)
   }
@@ -75,7 +75,7 @@ func main() {
     },
   }, nil)
   
-  xmlResult, err := sitemapIdx.toXMLString()
+  xmlResult, err := sitemapIdx.ToXMLString()
   if err != nil {
     log.Fatal(err)
   }

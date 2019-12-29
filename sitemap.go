@@ -58,7 +58,7 @@ func NewSitemap(items []*SitemapItem, opts * Options) *Sitemap {
 	return &s
 }
 
-func (s * Sitemap) toXMLString() (string, error) {
+func (s * Sitemap) ToXMLString() (string, error) {
 	itemsXML := make([]*xmlSitemapItem, len(s.items))
 	for idx, i := range s.items {
 		if s.options.validate && !isValidItem(i) {
@@ -82,10 +82,10 @@ func (s * Sitemap) toXMLString() (string, error) {
 	return result, nil
 }
 
-func (s * Sitemap) addItem(loc string, lastMod time.Time, changeFreq string, priority float32) {
+func (s * Sitemap) AddItem(loc string, lastMod time.Time, changeFreq string, priority float32) {
 	s.items = append(s.items, &SitemapItem{Loc: loc, LastMod: lastMod, ChangeFreq: changeFreq, Priority: priority})
 }
 
-func (s * Sitemap) removeItem(idx int) {
+func (s * Sitemap) RemoveItem(idx int) {
 	s.items = append(s.items[:idx], s.items[idx+1:]...)
 }
