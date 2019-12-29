@@ -3,7 +3,7 @@
 
 # go-sitemap
 
-generate an ready-to-use XML sitemap and sitemap index with Go.
+Generate an ready-to-use XML sitemap and sitemap index with Go.
 
 - [X] Following sitemaps.org XML format
 - [X] Validate URLs and ChangeFreq
