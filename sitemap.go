@@ -61,7 +61,7 @@ func NewSitemap(items []*SitemapItem, opts * Options) *Sitemap {
 func (s * Sitemap) ToXMLString() (string, error) {
 	itemsXML := make([]*xmlSitemapItem, len(s.items))
 	for idx, i := range s.items {
-		if s.options.validate && !isValidItem(i) {
+		if s.options.Validate && !isValidItem(i) {
 			return "", ErrValidation
 		}
 		itemsXML[idx] = &xmlSitemapItem {

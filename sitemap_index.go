@@ -23,9 +23,9 @@ type xmlSitemapIndex struct {
 }
 
 type Options struct {
-	prettyOutput bool
-	withXMLHeader bool
-	validate bool
+	PrettyOutput bool
+	WithXMLHeader bool
+	Validate bool
 }
 
 // SitemapIndex is the structure used to create new sitemap index
@@ -62,7 +62,7 @@ func (si * SitemapIndex) RemoveItem(idx int) {
 func (si * SitemapIndex) ToXMLString() (string, error) {
 	itemsXML := make([]*xmlSitemapIndexItem, len(si.items))
 	for idx, i := range si.items {
-		if si.options.validate && !isValidIndexItem(i) {
+		if si.options.Validate && !isValidIndexItem(i) {
 			return "", ErrValidation
 		}
 		itemsXML[idx] = &xmlSitemapIndexItem {
